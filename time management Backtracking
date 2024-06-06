@@ -1,0 +1,40 @@
+# Define the tasks with their durations and dependencies
+tasks = {
+    'Reading Material': {'duration': 2, 'dependencies': []},
+    'Exercise': {'duration': 1, 'dependencies': ['Reading Material']},
+    'Break': {'duration': 2, 'dependencies': ['Reading Material']},
+    'Review': {'duration': 1, 'dependencies': ['Reading Material', 'Exercise']}
+}
+
+# Function to check if all dependencies of a task are met
+def dependencies_met(task, completed_tasks, tasks):
+    for dependency in tasks[task]['dependencies']:
+        if dependency not in completed_tasks:
+            return False
+    return True
+
+# Backtracking function to find the optimal task order
+def find_optimal_order(tasks, current_order, completed_tasks, current_time, best_order, best_time):
+    if len(current_order) == len(tasks):
+        if current_time < best_time[0]:
+            best_order[:] = current_order[:]
+            best_time[0] = current_time
+        return
+    
+    for task in tasks:
+        if task not in completed_tasks and dependencies_met(task, completed_tasks, tasks):
+            current_order.append(task)
+            completed_tasks.add(task)
+            find_optimal_order(tasks, current_order, completed_tasks, current_time + tasks[task]['duration'], best_order, best_time)
+            completed_tasks.remove(task)
+            current_order.pop()
+
+# Initialize variables to store the optimal order and its time
+best_order = []
+best_time = [float('inf')]
+
+# Start the backtracking process
+find_optimal_order(tasks, [], set(), 0, best_order, best_time)
+
+print(f"Optimal order: {best_order}")
+print(f"Completion time: {best_time[0]} hours")
