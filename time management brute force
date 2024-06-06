@@ -1,0 +1,40 @@
+import itertools
+
+Ontasks = {
+    'Reading Material': {'duration': 2, 'dependencies': []},
+    'Exercise': {'duration': 1, 'dependencies': ['Reading Material']},
+    'Break': {'duration': 2, 'dependencies': ['Reading Material']},
+    'Review': {'duration': 1, 'dependencies': ['Reading Material', 'Exercise']}
+}
+
+Function to check if a permutation satisfies dependencies
+def is_valid_permutation(perm, tasks):
+    completed_tasks = set()
+    for task in perm:
+        for dependency in tasks[task]['dependencies']:
+            if dependency not in completed_tasks:
+                return False
+        completed_tasks.add(task)
+    return True
+
+Function to calculate the total completion time of a permutation
+def calculate_completion_time(perm, tasks):
+    return sum(tasks[task]['duration'] for task in perm)
+
+Generate all possible permutations of tasks
+task_permutations = itertools.permutations(Ontasks.keys())
+
+Initialize variables to store the optimal order and its completion time
+optimal_order = None
+optimal_time = float('inf')
+
+Iterate through each permutation to find the optimal order
+for perm in task_permutations:
+    if is_valid_permutation(perm, Ontasks):
+        completion_time = calculate_completion_time(perm, Ontasks)
+        if completion_time < optimal_time:
+            optimal_time = completion_time
+            optimal_order = perm
+
+print(f"Optimal order: {optimal_order}")
+print(f"Completion time: {optimal_time} hours")
